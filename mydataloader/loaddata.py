@@ -1,65 +1,12 @@
-# Code that we'll import into our workflows to create a dataloader that can select data based on which datasets we specify we want to use.
-# Will call the get_data_loader function to return our desired dataloader object.
-
-# First, import dependencies
-import torch
-from torch.utils.data import Dataset, DataLoader
-import pandas as pd
-import numpy as np
-import pyarrow.parquet as pq
-import tkinter as tk
-from tkinter import filedialog
 import os
 import glob
-
-# Define the path to your datasets
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DATASETS_PATH = os.path.join(SCRIPT_DIR, "datasets")
-
-def select_datasets(datasets_path=DATASETS_PATH):
-    """
-        Function that prompts user to select datasets from our datasets directory.
-    """
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
-
-    # This will store your selection outside the inner function
-    selected_datasets = []
-
-    # Browse the dataset directory to list all subdirectories
-    dataset_dirs = next(os.walk(datasets_path))[1]
-    
-    # Create a new window for selection
-    selection_window = tk.Toplevel(root)
-    selection_window.title("Select Datasets")
-
-    listbox = tk.Listbox(selection_window, selectmode='multiple', width=50, height=15)
-    for dataset_dir in dataset_dirs:
-        listbox.insert(tk.END, dataset_dir)
-    listbox.pack()
-
-    def confirm_selection():
-        nonlocal selected_datasets  # This line is changed to reference the outer scope variable
-        selections = listbox.curselection()
-        selected_datasets = [dataset_dirs[i] for i in selections]
-        selection_window.destroy()
-        root.quit()
-
-    confirm_button = tk.Button(selection_window, text="Confirm", command=confirm_selection)
-    confirm_button.pack()
-
-    root.mainloop()
-    try:
-        root.destroy()  # Ensure the root tkinter window is closed
-    except:
-        pass  # Window is already closed
-
-    return selected_datasets  # This will now return the correct value
-
+import pandas as pd
+import pyarrow.parquet as pq
+from torch.utils.data import Dataset, DataLoader
 
 
 class CustomDataset(Dataset):
-    def __init__(self, dataset_names, datasets_path='DATASETS_PATH'):
+    def __init__(self, dataset_names, datasets_path=os.getenv('DATASET_PATH')):
         self.file_paths = {}
         self.indices = []
         
