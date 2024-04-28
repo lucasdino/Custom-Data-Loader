@@ -6,7 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 
 
 class CustomDataset(Dataset):
-    def __init__(self, dataset_names, datasets_path=os.getenv('DATASET_PATH')):
+    def __init__(self, dataset_names, datasets_path):
         self.file_paths = {}
         self.indices = []
         
@@ -56,7 +56,7 @@ class CustomDataset(Dataset):
 
 
 
-def get_dataloader(selected_datasets, datasets_path=DATASETS_PATH, batch_size=8, shuffle=True, num_workers=0):
+def get_dataloader(selected_datasets, datasets_path=os.getenv('DATASET_PATH'), batch_size=8, shuffle=True, num_workers=0):
     """
         Function that prompts for selection of which datasets to include, then creates a Pytorch Dataset and Dataloader. Returns the Dataloader.
 
